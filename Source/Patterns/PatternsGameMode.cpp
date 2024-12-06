@@ -1,0 +1,23 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+#include "PatternsGameMode.h"
+#include "PatternsCharacter.h"
+#include "UObject/ConstructorHelpers.h"
+#include "WeaponSystem/Singleton/WeaponManager.h"
+
+APatternsGameMode::APatternsGameMode()
+	: Super()
+{
+	// set default pawn class to our Blueprinted character
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(
+		TEXT("/Game/FirstPerson/Blueprints/BP_FirstPersonCharacter"));
+	DefaultPawnClass = PlayerPawnClassFinder.Class;
+}
+
+void APatternsGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	// Cleanup the WeaponManager singleton
+	//	UWeaponManager::Cleanup();
+
+	Super::EndPlay(EndPlayReason);
+}
