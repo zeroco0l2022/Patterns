@@ -7,6 +7,8 @@
 #include "RangedWeapon.generated.h"
 
 
+class UProjectileSystemFacade;
+
 UCLASS(Blueprintable)
 class PATTERNS_API ARangedWeapon : public AWeaponBase
 {
@@ -37,6 +39,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon|Effects")
 	TSubclassOf<UMuzzleFlashEffect> MuzzleEffectClass;
+	
+	virtual void Init() override;
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual void Fire();
@@ -58,7 +62,7 @@ private:
 	FTimerHandle FireRateTimer;
 
 	UPROPERTY()
-	TWeakObjectPtr<UProjectileSystemFacade> ProjectileSystem;
+	UProjectileSystemFacade* ProjectileSystem;
 
 	void ResetFireRate();
 	FTransform GetMuzzleTransform() const;

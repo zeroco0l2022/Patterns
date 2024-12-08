@@ -39,6 +39,9 @@ class APatternsCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UInputAction* ShootAction;
+
 	/** Factory class for creating weapons */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UWeaponBuilderFactory> DefaultWeaponFactory;
@@ -46,6 +49,8 @@ class APatternsCharacter : public ACharacter
 	/** Weapon attachment mesh */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
 	UStaticMesh* DefaultAttachmentMesh;
+
+	
 
 public:
 	APatternsCharacter();
@@ -68,6 +73,8 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
+	void Shoot();
+	void StopShoot();
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	// End of APawn interface

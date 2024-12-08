@@ -1,5 +1,6 @@
 #include "WeaponBase.h"
 #include "WeaponsData.h"
+#include "Patterns/WeaponSystem/Projectile/ProjectileSystemFacade.h"
 
 
 AWeaponBase::AWeaponBase()
@@ -8,6 +9,7 @@ AWeaponBase::AWeaponBase()
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	RootComponent = WeaponMesh;
+	WeaponMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 
 	Damage = 10.0f;
 	WeaponType = EWeaponType::Melee;
@@ -16,6 +18,7 @@ AWeaponBase::AWeaponBase()
 void AWeaponBase::BeginPlay()
 {
 	Super::BeginPlay();
+	
 }
 
 void AWeaponBase::Tick(float DeltaTime)

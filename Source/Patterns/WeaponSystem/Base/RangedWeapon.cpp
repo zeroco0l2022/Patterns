@@ -13,21 +13,30 @@ ARangedWeapon::ARangedWeapon()
 	bAutomatic = false;
 	bCanFire = true;
 	ProjectileSpeed = 3000.0f;
+
+	
 }
 
 void ARangedWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ProjectileSystem = NewObject<UProjectileSystemFacade>(this);
+	
+	
+}
+
+void ARangedWeapon::Init()
+{
+	if (GetOwner())
+		ProjectileSystem = NewObject<UProjectileSystemFacade>(GetOwner());
 }
 
 void ARangedWeapon::Fire()
 {
-	if (!bCanFire || !ProjectileClass)
-	{
-		return;
-	}
+//	if (!bCanFire || !ProjectileClass)
+//	{
+//		return;
+//	}
 
 
 	const FTransform MuzzleTransform = GetMuzzleTransform();
@@ -42,7 +51,7 @@ void ARangedWeapon::Fire()
 	);
 
 
-	if (MuzzleEffectClass && ProjectileSystem.IsValid())
+	if (MuzzleEffectClass && ProjectileSystem)
 	{
 		ProjectileSystem->ApplyEffectAtLocation(MuzzleTransform.GetLocation(), MuzzleEffectClass);
 	}
@@ -54,10 +63,10 @@ void ARangedWeapon::Fire()
 
 void ARangedWeapon::StartFire()
 {
-	if (bAutomatic)
-	{
-		GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &ARangedWeapon::Fire, FireRate, true);
-	}
+//	if (bAutomatic)
+//	{
+//		GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &ARangedWeapon::Fire, FireRate, true);
+//}
 	Fire();
 }
 
@@ -83,7 +92,7 @@ FTransform ARangedWeapon::GetMuzzleTransform() const
 {
 	if (WeaponMesh)
 	{
-		return WeaponMesh->GetSocketTransform(FName("MuzzleSocket"));
+		return WeaponMesh->GetSocketTransform(FName("Muzzle"));
 	}
 	return GetActorTransform();
 }
@@ -91,10 +100,10 @@ FTransform ARangedWeapon::GetMuzzleTransform() const
 
 void ARangedWeapon::BeginDestroy()
 {
-	if (ProjectileSystem.IsValid())
+	if (ProjectileSystem)
 	{
 		ProjectileSystem->ConditionalBeginDestroy();
-		ProjectileSystem.Reset();
+		ProjectileSystem = nullptr;
 	}
 
 	Super::BeginDestroy();

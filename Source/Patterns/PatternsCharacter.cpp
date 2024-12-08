@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Engine/LocalPlayer.h"
+#include "WeaponSystem/Base/RangedWeapon.h"
 #include "WeaponSystem/Base/WeaponBase.h"
 #include "WeaponSystem/Singleton/WeaponManager.h"
 
@@ -53,8 +54,10 @@ void APatternsCharacter::OnWeaponEquipped(AWeaponBase* EquippedWeapon)
 {
 	if (EquippedWeapon && Mesh1P)
 	{
+		EquippedWeapon->SetOwner(this);
 		EquippedWeapon->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 		                                  TEXT("GripPoint"));
+		EquippedWeapon->Init();
 	}
 }
 
@@ -75,6 +78,9 @@ void APatternsCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APatternsCharacter::Look);
+
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &APatternsCharacter::Shoot);
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Completed, this, &APatternsCharacter::StopShoot);
 	}
 	else
 	{
@@ -109,5 +115,23 @@ void APatternsCharacter::Look(const FInputActionValue& Value)
 		// add yaw and pitch input to controller
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
+
+void APatternsCharacter::Shoot()
+{
+	if (UWeaponManager::GetInstance())
+	{
+		if (ARangedWeapon* Weapon = Cast<ARangedWeapon>(UWeaponManager::GetInstance()->GetCurrentWeapon()))
+			Weapon->StartFire();
+	}
+}
+
+void APatternsCharacter::StopShoot()
+{
+	if (UWeaponManager::GetInstance())
+	{
+		if (ARangedWeapon* Weapon = Cast<ARangedWeapon>(UWeaponManager::GetInstance()->GetCurrentWeapon()))
+			Weapon->StopFire();
 	}
 }
