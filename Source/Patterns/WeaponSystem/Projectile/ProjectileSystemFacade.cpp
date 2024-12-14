@@ -15,16 +15,15 @@ AProjectileBase* UProjectileSystemFacade::SpawnProjectile(TSubclassOf<AProjectil
 		return nullptr;
 	}
 
-	UWorld* World = GetWorld();
-	if (!World)
+	if (!GetWorld())
 	{
 		return nullptr;
 	}
 
 	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	AProjectileBase* Projectile = World->SpawnActor<AProjectileBase>(
+	AProjectileBase* Projectile = GetWorld()->SpawnActor<AProjectileBase>(
 		ProjectileClass,
 		Location,
 		Rotation,

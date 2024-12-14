@@ -58,3 +58,16 @@ void UWeaponManager::UnequipCurrentWeapon()
 {
 	CurrentWeapon = nullptr;
 }
+
+
+void UWeaponManager::UpgradeFireRate(const TSubclassOf<UWeaponModificationVisitor>& FireRateUpgradeVisitorClass)
+{
+	if (CurrentWeapon.Get() && FireRateUpgradeVisitorClass)
+	{
+		// Создаем экземпляр класса посетителя
+		UWeaponModificationVisitor* FireRateVisitor = NewObject<UWeaponModificationVisitor>(
+			CurrentWeapon.Get(), FireRateUpgradeVisitorClass);
+		// Применяем посетителя
+		CurrentWeapon.Get()->Accept(FireRateVisitor);
+	}
+}

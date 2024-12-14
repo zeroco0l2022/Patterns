@@ -6,6 +6,8 @@
 #include "WeaponBase.generated.h"
 
 
+class UWeaponModificationVisitor;
+class UWeaponCommandInvoker;
 enum class EWeaponType : uint8;
 
 UCLASS(Abstract)
@@ -23,6 +25,9 @@ public:
 	virtual AWeaponBase* Clone() override;
 	virtual void CopyPropertiesFrom(const AWeaponBase* Source) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	virtual void Init() PURE_VIRTUAL(AWeaponBase::Init,);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	EWeaponType WeaponType;
 
@@ -35,6 +40,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	USkeletalMeshComponent* WeaponMesh;
 
+	// Приём посетителя
+	UFUNCTION(BlueprintCallable, Category = "Weapon|Visitor")
+	virtual void Accept(UWeaponModificationVisitor* Visitor) PURE_VIRTUAL(AWeaponBase::Accept,);
+
 protected:
+	// Объект, который будет выполнять команды
+	UPROPERTY()
+	UWeaponCommandInvoker* CommandInvoker;
+
 	USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
 };

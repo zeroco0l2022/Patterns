@@ -1,5 +1,7 @@
 #include "WeaponBase.h"
 #include "WeaponsData.h"
+#include "Patterns/WeaponSystem/Projectile/ProjectileSystemFacade.h"
+#include "Patterns/WeaponSystem/Command/WeaponCommandInvoker.h"
 
 
 AWeaponBase::AWeaponBase()
@@ -8,6 +10,7 @@ AWeaponBase::AWeaponBase()
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	RootComponent = WeaponMesh;
+	WeaponMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 
 	Damage = 10.0f;
 	WeaponType = EWeaponType::Melee;
@@ -16,6 +19,9 @@ AWeaponBase::AWeaponBase()
 void AWeaponBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Создаем объект для исполнения команд
+	CommandInvoker = NewObject<UWeaponCommandInvoker>(this);
 }
 
 void AWeaponBase::Tick(float DeltaTime)

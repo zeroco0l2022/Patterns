@@ -10,7 +10,8 @@ AWeaponBase* UModernWeaponBuilderFactory::InitializeWeaponBuilder(const UClass* 
 		if (UWeaponBuilder* Builder = NewObject<UWeaponBuilder>(GetOuter(), BuilderClass))
 		{
 			AWeaponBase* Weapon = Builder->Build();
-			if (UStaticMesh* AttachmentMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Script/Engine.StaticMesh'/Game/FPWeapon/Mesh/Scope.Scope'")))
+			if (UStaticMesh* AttachmentMesh = LoadObject<UStaticMesh>(
+				nullptr, TEXT("/Script/Engine.StaticMesh'/Game/FPWeapon/Mesh/Scope.Scope'")))
 			{
 				Builder->AddAttachment("Scope", AttachmentMesh);
 			}

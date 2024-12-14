@@ -9,8 +9,13 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Engine/LocalPlayer.h"
+#include "WeaponSystem/Base/RangedWeapon.h"
 #include "WeaponSystem/Base/WeaponBase.h"
 #include "WeaponSystem/Singleton/WeaponManager.h"
+#include "WeaponSystem/Strategy/AutoFireStrategy.h"
+#include "WeaponSystem/Strategy/BurstFireStrategy.h"
+#include "WeaponSystem/Strategy/SingleFireStrategy.h"
+#include "WeaponSystem/Visitor/FireRateUpgradeVisitor.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -53,8 +58,10 @@ void APatternsCharacter::OnWeaponEquipped(AWeaponBase* EquippedWeapon)
 {
 	if (EquippedWeapon && Mesh1P)
 	{
+		EquippedWeapon->SetOwner(this);
 		EquippedWeapon->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 		                                  TEXT("GripPoint"));
+		EquippedWeapon->Init();
 	}
 }
 
@@ -75,6 +82,20 @@ void APatternsCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APatternsCharacter::Look);
+
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &APatternsCharacter::Shoot);
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Completed, this, &APatternsCharacter::StopShoot);
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Canceled, this, &APatternsCharacter::StopShoot);
+
+		EnhancedInputComponent->BindAction(SingleFireAction, ETriggerEvent::Started, this,
+		                                   &APatternsCharacter::SwitchToSingleFire);
+		EnhancedInputComponent->BindAction(BurstFireAction, ETriggerEvent::Started, this,
+		                                   &APatternsCharacter::SwitchToBurstFire);
+		EnhancedInputComponent->BindAction(AutoFireAction, ETriggerEvent::Started, this,
+		                                   &APatternsCharacter::SwitchToAutoFire);
+
+		EnhancedInputComponent->BindAction(UpgradeWeaponAction, ETriggerEvent::Started, this,
+		                                   &APatternsCharacter::UpgradeWeapon);
 	}
 	else
 	{
@@ -109,5 +130,59 @@ void APatternsCharacter::Look(const FInputActionValue& Value)
 		// add yaw and pitch input to controller
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
+
+void APatternsCharacter::Shoot()
+{
+	if (UWeaponManager::GetInstance())
+	{
+		if (ARangedWeapon* Weapon = Cast<ARangedWeapon>(UWeaponManager::GetInstance()->GetCurrentWeapon()))
+		{
+			Weapon->StartFire();
+		}
+	}
+}
+
+void APatternsCharacter::StopShoot()
+{
+	if (UWeaponManager::GetInstance())
+	{
+		if (ARangedWeapon* Weapon = Cast<ARangedWeapon>(UWeaponManager::GetInstance()->GetCurrentWeapon()))
+		{
+			Weapon->StopFire();
+		}
+	}
+}
+
+void APatternsCharacter::SwitchToSingleFire()
+{
+	if (ARangedWeapon* Weapon = Cast<ARangedWeapon>(UWeaponManager::GetInstance()->GetCurrentWeapon()))
+	{
+		Weapon->SetFiringStrategy(USingleFireStrategy::StaticClass());
+	}
+}
+
+void APatternsCharacter::SwitchToBurstFire()
+{
+	if (ARangedWeapon* Weapon = Cast<ARangedWeapon>(UWeaponManager::GetInstance()->GetCurrentWeapon()))
+	{
+		Weapon->SetFiringStrategy(UBurstFireStrategy::StaticClass());
+	}
+}
+
+void APatternsCharacter::SwitchToAutoFire()
+{
+	if (ARangedWeapon* Weapon = Cast<ARangedWeapon>(UWeaponManager::GetInstance()->GetCurrentWeapon()))
+	{
+		Weapon->SetFiringStrategy(UAutoFireStrategy::StaticClass());
+	}
+}
+
+void APatternsCharacter::UpgradeWeapon()
+{
+	if (UWeaponManager::GetInstance())
+	{
+		UWeaponManager::GetInstance()->UpgradeFireRate(UFireRateUpgradeVisitor::StaticClass());
 	}
 }

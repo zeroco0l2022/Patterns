@@ -12,24 +12,27 @@ AStandardProjectile::AStandardProjectile()
 	if (!CollisionComponent)
 	{
 		CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
-		CollisionComponent->InitSphereRadius(15.0f);
-		CollisionComponent->SetCollisionProfileName(TEXT("Projectile"));
-		RootComponent = CollisionComponent;
 	}
+
+	CollisionComponent->InitSphereRadius(15.0f);
+	CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	CollisionComponent->SetCollisionProfileName(TEXT("Projectile"));
+	RootComponent = CollisionComponent;
 
 	if (!ProjectileMovement)
 	{
 		ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
-		ProjectileMovement->UpdatedComponent = CollisionComponent;
-		ProjectileMovement->InitialSpeed = 3000.0f;
-		ProjectileMovement->MaxSpeed = 3000.0f;
-		ProjectileMovement->bRotationFollowsVelocity = true;
-		ProjectileMovement->ProjectileGravityScale = 0.0f;
 	}
+	ProjectileMovement->UpdatedComponent = CollisionComponent;
+	ProjectileMovement->bShouldBounce = true;
+	ProjectileMovement->InitialSpeed = 5000.0f;
+	ProjectileMovement->MaxSpeed = 5000.0f;
+	ProjectileMovement->bRotationFollowsVelocity = true;
+	ProjectileMovement->ProjectileGravityScale = 0.2f;
 
 
 	BaseDamage = 20.0f;
-	ProjectileSpeed = 3000.0f;
+	ProjectileSpeed = 5000.0f;
 }
 
 void AStandardProjectile::Initialize(float Damage, float Speed)
@@ -58,7 +61,7 @@ void AStandardProjectile::Initialize(float Damage, float Speed)
 void AStandardProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-
+	SetLifeSpan(3.0f);
 	CollisionComponent->OnComponentHit.AddDynamic(this, &AStandardProjectile::OnProjectileImpact);
 }
 
@@ -91,7 +94,7 @@ void AStandardProjectile::OnProjectileImpact(UPrimitiveComponent* HitComponent, 
 	}
 
 
-	Destroy();
+	//Destroy();
 }
 
 void AStandardProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)

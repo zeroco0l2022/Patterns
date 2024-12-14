@@ -4,6 +4,9 @@
 #include "GameFramework/Actor.h"
 #include "ProjectileBase.generated.h"
 
+class UProjectileMovementComponent;
+class USphereComponent;
+
 UCLASS(Abstract)
 class PATTERNS_API AProjectileBase : public AActor
 {
@@ -18,10 +21,13 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	class USphereComponent* CollisionComponent;
+	USphereComponent* CollisionComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	class UProjectileMovementComponent* ProjectileMovement;
+	UProjectileMovementComponent* ProjectileMovement;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	UStaticMeshComponent* MeshComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	float BaseDamage;

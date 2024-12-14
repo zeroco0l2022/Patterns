@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "WeaponSystem/AbstractFactory/WeaponBuilderFactory.h"
+#include "WeaponSystem/Base/RangedWeapon.h"
 #include "WeaponSystem/Base/WeaponBase.h"
 #include "PatternsCharacter.generated.h"
 
@@ -39,6 +40,21 @@ class APatternsCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UInputAction* ShootAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UInputAction* SingleFireAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UInputAction* BurstFireAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UInputAction* AutoFireAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UInputAction* UpgradeWeaponAction;
+
 	/** Factory class for creating weapons */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UWeaponBuilderFactory> DefaultWeaponFactory;
@@ -52,6 +68,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
 
 	UFUNCTION()
 	void OnWeaponEquipped(AWeaponBase* EquippedWeapon);
@@ -68,6 +85,12 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
+	void Shoot();
+	void StopShoot();
+	void SwitchToSingleFire();
+	void SwitchToBurstFire();
+	void SwitchToAutoFire();
+	void UpgradeWeapon();
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	// End of APawn interface

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Patterns/WeaponSystem/AbstractFactory/WeaponBuilderFactory.h"
+#include "Patterns/WeaponSystem/Visitor/WeaponModificationVisitor.h"
 #include "WeaponManager.generated.h"
 
 class AWeaponBase;
@@ -44,4 +45,7 @@ public:
 
 	UFUNCTION()
 	const TArray<TWeakObjectPtr<AWeaponBase>>& GetInventory() const { return Inventory; }
+
+	// Апгрейд скорости стрельбы
+	void UpgradeFireRate(const TSubclassOf<UWeaponModificationVisitor>& FireRateUpgradeVisitorClass);
 };
